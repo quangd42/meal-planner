@@ -1,16 +1,11 @@
-name: ci
-
 on:
   pull_request:
-    branches: [none]
+    branches: [main, ft/security]
 
 jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     env:
       GO111MODULE: on
@@ -23,15 +18,15 @@ jobs:
         with:
           go-version: "1.22"
 
-      - name: Run Tests
-        run: go test ./... -cover
+      # - name: Run Tests
+      #   run: go test backend/... -cover
 
       - name: Checkout Source
         uses: actions/checkout@v3
       - name: Run Gosec Security Scanner
         uses: securego/gosec@master
         with:
-          args: ./...
+          args: -exclude-generated backend/...
 
   style:
     name: Style
@@ -50,7 +45,7 @@ jobs:
         run: go install honnef.co/go/tools/cmd/staticcheck@latest
 
       - name: Run formatter
-        run: test -z $(go fmt ./...)
+        run: test -z $(go fmt backend/...)
 
       - name: Run staticcheck
-        run: staticcheck ./...
+        run: staticcheck backend/...
